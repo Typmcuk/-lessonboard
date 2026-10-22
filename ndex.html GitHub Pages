@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>LessonBoard — Контейнеры</title>
+<style>
+:root{--bg:#f6f3ec;--card:#fffdf8;--ink:#1d1b16;--mu:#6b665a;--ln:#ddd6c6;--ac:#e4572e;--g:#1f6f5c;--ok:#e2f1ea;--bad:#fbe5df;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#16150f;--card:#1f1d16;--ink:#f2eee2;--mu:#a39d8c;--ln:#38352a;--ok:#16332b;--bad:#3a1f18}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:18px/1.6 Georgia,"Times New Roman",serif}
+.mono,code,pre{font-family:ui-monospace,Menlo,Consolas,monospace}
+.wrap{max-width:860px;margin:0 auto;padding:0 16px 60px}
+.top{display:flex;align-items:center;justify-content:space-between;padding:18px 0 8px}
+.logo{font-weight:700;font-size:22px}.logo b{color:var(--ac)}
+.hero{padding:22px 0 8px}
+.cells{display:flex;gap:6px;margin-bottom:14px}
+.cells span{width:44px;height:44px;border:2px solid var(--ink);display:grid;place-items:center;font:600 16px ui-monospace,Menlo,monospace;background:var(--card)}
+.cells span:nth-child(2){background:var(--ac);color:#fff;border-color:var(--ac)}
+.cells span:nth-child(4){background:var(--g);color:#fff;border-color:var(--g)}
+h1{font-size:clamp(34px,7vw,54px);line-height:1.08;margin:0 0 6px;letter-spacing:-.02em}
+.mu{color:var(--mu);font-size:15px}
+nav{display:flex;gap:0;margin:18px 0 20px;border-bottom:2px solid var(--ink);overflow-x:auto}
+nav button{flex:1;font:600 17px Georgia,serif;padding:12px 18px;border:0;background:none;color:var(--mu);cursor:pointer;border-bottom:4px solid transparent;margin-bottom:-2px;white-space:nowrap}
+nav button.on{color:var(--ink);border-bottom-color:var(--ac)}
+h2{font-size:14px;letter-spacing:.12em;text-transform:uppercase;color:var(--ac);margin:26px 0 10px;font-family:ui-monospace,Menlo,monospace}
+.card{background:var(--card);border:1.5px solid var(--ln);border-radius:12px;padding:14px 16px;margin:10px 0}
+.bar{height:10px;background:var(--ln);border-radius:6px;overflow:hidden;margin:8px 0 4px}.bar i{display:block;height:100%;background:var(--g);transition:width .3s}
+.t{display:flex;align-items:center;gap:12px;padding:10px 4px;border-bottom:1px dashed var(--ln)}
+.t input{width:24px;height:24px;accent-color:var(--g);flex:none}
+.t span{flex:1}.t.d span{text-decoration:line-through;color:var(--mu)}
+.x{border:0;background:none;color:var(--mu);font-size:22px;cursor:pointer;padding:4px 10px;border-radius:8px}.x:hover{background:var(--bad);color:var(--ac)}
+.add{display:flex;gap:8px;margin-top:14px}
+label{display:block;font-weight:700;margin:0 0 4px;font-size:16px}
+textarea{width:100%;min-height:80px;font:inherit;font-size:17px;padding:11px 13px;border:1.5px solid var(--ln);border-radius:10px;background:var(--card);color:var(--ink)}textarea:focus{outline:2px solid var(--ac)}
+input[type=text]{width:100%;flex:1;min-width:0;font:inherit;font-size:17px;padding:11px 13px;border:1.5px solid var(--ln);border-radius:10px;background:var(--card);color:var(--ink)}
+input[type=text]:focus{outline:2px solid var(--ac)}
+.btn{font:600 16px Georgia,serif;background:var(--ink);color:var(--bg);border:0;border-radius:10px;padding:11px 18px;cursor:pointer}
+.btn.a{background:var(--ac);color:#fff}
+details{background:var(--card);border:1.5px solid var(--ln);border-radius:12px;margin:10px 0;padding:0 16px}
+summary{cursor:pointer;font-weight:700;padding:14px 0;font-size:19px}
+details[open] summary{color:var(--ac)}
+details p{margin:0 0 12px}
+pre{background:#1d1b16;color:#f2eee2;padding:12px 14px;border-radius:10px;overflow-x:auto;font-size:15px;line-height:1.5;margin:0 0 14px}
+.tag{display:inline-block;font:600 13px ui-monospace,Menlo,monospace;background:var(--ok);color:var(--g);padding:2px 9px;border-radius:99px}
+.opt{display:block;width:100%;text-align:left;font:inherit;font-size:17px;padding:11px 14px;margin:6px 0;border:1.5px solid var(--ln);background:var(--bg);color:var(--ink);border-radius:10px;cursor:pointer}
+.opt.sel{border-color:var(--ac);box-shadow:0 0 0 3px rgba(228,87,46,.2)}
+.opt.r{background:var(--ok);border-color:var(--g)}.opt.w{background:var(--bad);border-color:var(--ac)}
+.score{font:700 38px ui-monospace,Menlo,monospace;color:var(--g)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font:600 16px Georgia,serif;padding:9px 16px;border:1.5px solid var(--ln);border-radius:99px;background:var(--card);color:var(--ink);cursor:pointer}
+.chip.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+input[type=range]{width:100%;accent-color:var(--ac);margin-top:8px}
+.notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.note{padding:12px;border-radius:4px 4px 16px 4px;box-shadow:0 4px 10px rgba(0,0,0,.14)}
+.note label,.note textarea{color:#2a2616}.note label{font-size:14px}
+.note textarea{background:rgba(255,255,255,.55);border:0;min-height:120px}
+.ticket{border:2px dashed var(--ac);border-radius:14px;padding:14px 16px;background:var(--card)}
+.hid{display:none}
+</style></head><body><div class="wrap">
+<nav id="nav"></nav><main id="v"></main></div>
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const load=(k,d)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}};
+const save=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+const API="https://script.google.com/macros/s/AKfycbw26JWQPG1w7SR16jMiCpGNpLvcrqN6WsEPUsYVdz_sB78UbX1NGHBjQbEWFhBylgB3/exec"; // адрес веб-приложения Google Apps Script (заканчивается на /exec)
+const GOALS=["Познакомиться с понятием и структурой контейнеров данных","Понять, чем отличаются массив, словарь, множество, стек и очередь","Уметь выбрать подходящий контейнер под задачу"];
+let reg=load("lb_reg",{name:"",grp:""}),R=load("lb_r",{}),SENT=load("lb_sent",null),TP=load("lb_pin",""),JR=[],JM="";
+let tab=load("lb_tab","lesson"),ans={},sub=false;
+const LEC=[
+["Что такое контейнер",`<p>Контейнер — это структура, которая хранит и организует <b>набор элементов</b>. Вместо десяти переменных мы заводим один контейнер и работаем со всеми значениями сразу.</p><p>Две базовые операции: <span class="tag">размер</span> — сколько элементов внутри, и <span class="tag">обход</span> — просмотр элементов по очереди.</p><pre>nums = [4, 8, 15]
+print(len(nums))      # 3
+for x in nums: print(x)</pre>`],
+["Массив (список)",`<p>Элементы лежат по порядку, к каждому обращаются по <b>индексу</b>. Индексация идёт с нуля: в массиве из пяти элементов последний имеет индекс 4.</p><pre>a = [10, 20, 30, 40, 50]
+print(a[0])    # 10
+print(a[4])    # 50 — последний</pre>`],
+["Словарь",`<p>Хранит пары <b>«ключ — значение»</b>. Ищем не по номеру, а по ключу. Удобен для телефонной книги: код контакта — ключ, номер — значение.</p><pre>book = {"A1": "+7 701 000 00 01"}
+book["B2"] = "+7 702 000 00 02"
+print(book["A1"])</pre>`],
+["Множество",`<p>Хранит только <b>уникальные</b> элементы: повторы не сохраняются. Отлично подходит, чтобы получить уникальные названия городов из списка с повторами.</p><pre>cities = ["Алматы","Астана","Алматы"]
+print(set(cities))   # {'Алматы','Астана'}</pre>`],
+["Стек",`<p>Принцип <b>LIFO</b> — «последним пришёл, первым вышел». Как стопка тарелок: берём ту, что сверху. Если добавить 10, 20, 30, первым извлечётся 30.</p><pre>s = []
+s.append(10); s.append(20); s.append(30)
+print(s.pop())   # 30</pre>`],
+["Очередь",`<p>Принцип <b>FIFO</b> — «первым пришёл, первым вышел». Как очередь в кассу. Если добавить 10, 20, 30, первым извлечётся 10.</p><pre>from collections import deque
+q = deque([10, 20, 30])
+print(q.popleft())   # 10</pre>`]];
+const QZ=[
+["Что называют контейнером данных?",["Структуру для хранения и организации набора элементов","Команду завершения программы","Устройство вывода информации","Оператор проверки условия"],0],
+["Как обращаются к элементу массива по его позиции?",["По цвету","По имени файла","По индексу","По размеру экрана"],2],
+["В массиве из пяти элементов индексация с нуля. Индекс последнего элемента?",["5","1","6","4"],3],
+["Какой контейнер хранит пары «ключ — значение»?",["Стек","Словарь","Очередь","Множество"],1],
+["В пустой стек добавили 10, 20, 30. Что извлекут первым?",["10","20","30","Все сразу"],2],
+["В пустую очередь добавили 10, 20, 30. Что извлекут первым?",["10","20","30","Ничего"],0],
+["Нужны уникальные названия городов из списка с повторами. Что подходит лучше?",["Стек","Множество","Очередь","Массив с повторами"],1],
+["В списке было 6 элементов. Добавили 2 и удалили 1. Сколько стало?",["6","7","8","9"],1],
+["Какое свойство характерно для множества?",["Оно хранит только строки","У каждого элемента обязательно есть числовой индекс","Одинаковые элементы не хранятся в нём как отдельные повторы","Из него нельзя удалять элементы"],2],
+["Для чего используют контейнеры данных?",["Только для оформления текста","Для совместного хранения и обработки нескольких значений","Только для запуска операционной системы","Для замены всех переменных константами"],1],
+["Какой контейнер удобнее для хранения телефонных номеров по уникальному коду контакта?",["Стек без ключей","Очередь без ключей","Множество кодов без номеров","Словарь с кодом контакта в качестве ключа"],3],
+["Что означает обход контейнера?",["Просмотр элементов по очереди для их обработки","Удаление всех данных из программы","Переименование файла программы","Замена контейнера случайным числом"],0],
+["Что означает размер контейнера?",["Число строк исходного кода","Длина имени переменной","Количество находящихся в нём элементов","Количество функций в программе"],2],
+["Какая структура работает по принципу «последним пришёл — первым вышел»?",["Очередь","Стек","Словарь","Множество"],1],
+["Какая структура работает по принципу «первым пришёл — первым вышел»?",["Словарь","Множество","Стек","Очередь"],3]];
+function jourV(){if(!TP)return `<div class="card"><b>Журнал преподавателя</b><p class="mu">Введите PIN, который вы задали в скрипте Google.</p><input type="text" id="pin" placeholder="PIN" autocomplete="off"><div style="margin-top:10px"><button class="btn a" data-a="jpin">Войти</button></div></div>`;
+const a=[...JR].sort((x,y)=>(x.g+x.n).localeCompare(y.g+y.n,"ru")),sc=a.filter(x=>x.s!=null),avg=sc.length?Math.round(sc.reduce((m,x)=>m+x.s,0)/sc.length):0;
+return `<div class="card"><b>Журнал преподавателя</b> <span class="mu">${esc(JM)}</span><div style="margin-top:10px"><button class="btn a" data-a="jref">Обновить</button> <button class="btn" data-a="jout">Выйти</button></div></div>
+<h2>Пришли: ${a.length} · Сдали: ${sc.length} · Средний балл: ${avg}</h2>
+${a.length?`<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse"><tr class="mu"><th align="left">№</th><th align="left">ФИО</th><th align="left">Группа</th><th align="left">Итоговый балл</th></tr>${a.map((x,i)=>`<tr style="border-top:1px dashed var(--ln)"><td>${i+1}</td><td>${esc(x.n)}</td><td>${esc(x.g)}</td><td>${x.s==null?'<span class="tag">на уроке</span>':`<b class="mono" style="color:${col(x.s)}">${x.s} / 100</b> <span class="mu">${lvl(x.s)}</span>`}</td></tr>`).join("")}</table></div>`:`<p class="mu">Пока никого нет.</p>`}`}
+function send(st){if(!API||API.startsWith("ВСТАВЬТЕ"))return false;const r=rsc();fetch(API,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({name:reg.name,grp:reg.grp,status:st,total:st==="сдал"?cur():"",test:Math.round(tsc()*0.8),refl:r.t})}).catch(()=>{});return true}
+function cur(){return Math.round(tsc()*0.8)+rsc().t}
+async function jload(){if(!TP)return;try{const r=await fetch(API+"?pin="+encodeURIComponent(TP)),d=await r.json();if(d.error){JM="Неверный PIN";JR=[]}else{JM="Обновлено "+new Date().toLocaleTimeString("ru");const m={};d.rows.forEach(x=>{const k=(String(x.n).trim()+"|"+String(x.g).trim()).toLowerCase(),o=m[k]||{n:x.n,g:x.g,s:null};if(x.st==="сдал"&&x.s!==""&&x.s!=null)o.s=+x.s;m[k]=o});JR=Object.values(m)}}catch(e){JM="Не удалось загрузить: проверьте адрес скрипта"}if(tab==="journal")render()}
+setInterval(()=>{if(tab==="journal"&&TP)jload()},15000);
+function lessonV(){
+return `<h1>Тема: Контейнеры</h1>
+${reg.name?`<div class="card" style="border-color:var(--g);background:var(--ok)">✅ Вы зарегистрированы: <b>${esc(reg.name)}</b>, группа <b>${esc(reg.grp)}</b><div class="mu" style="margin-top:8px">Преподаватель видит, что вы на уроке ✓</div><div><button class="btn" style="margin-top:6px" data-a="unreg">Изменить</button></div></div>`:`<h2>Регистрация студента</h2><div class="card"><label for="rn">ФИО</label><input type="text" id="rn" maxlength="80" placeholder="Иванов Иван Иванович"><label for="rg" style="margin-top:12px">Группа</label><input type="text" id="rg" maxlength="30" placeholder="Например, ИС-21"><button class="btn a" style="margin-top:14px" data-a="reg">Зарегистрироваться</button></div>`}
+<h2>Цели урока</h2>${GOALS.map((g,i)=>`<div class="card"><b class="mono" style="color:var(--ac)">0${i+1}</b> ${esc(g)}</div>`).join("")}`}
+function lecV(){return `<p class="mu">Нажимайте на разделы, чтобы раскрыть их.</p>`+LEC.map((s,i)=>`<details ${i==0?"open":""}><summary>${i+1}. ${s[0]}</summary>${s[1]}</details>`).join("")}
+function testV(){const sc=QZ.reduce((a,q,i)=>a+(ans[i]===q[2]?1:0),0),p=Math.round(sc/QZ.length*100);
+return (sub?`<div class="card"><span class="mu">Ваш результат</span><div class="score">${sc}/${QZ.length} · ${p}%</div></div>`:"")+QZ.map((q,i)=>`<div class="card"><b class="mono">${i+1}.</b> ${esc(q[0])}${q[1].map((o,j)=>`<button class="opt ${sub?(j===q[2]?"r":ans[i]===j?"w":""):(ans[i]===j?"sel":"")}" data-a="ans" data-i="${i}" data-j="${j}"><b class="mono">${"ABCD"[j]}</b> ${esc(o)}</button>`).join("")}</div>`).join("")+(sub?`<button class="btn" data-a="retry">Пройти заново</button>`:`<button class="btn a" data-a="fin">Проверить ответы</button>`)}
+const lvl=p=>p>=90?"отлично":p>=70?"хорошо":p>=50?"удовлетворительно":"нужно повторить";
+const col=p=>p>=90?"#1f6f5c":p>=70?"#2563eb":p>=50?"#d97706":"#dc2626";
+function tsc(){return sub?Math.round(QZ.reduce((a,q,i)=>a+(ans[i]===q[2]?1:0),0)/QZ.length*100):0}
+function rsc(){const a=Math.round(+(R.un||0)/10),c=Math.round(["n1","n2","n3","ex"].reduce((x,f)=>{const n=(R[f]||"").trim().length;return x+(n>=10?2.5:n>0?1.25:0)},0));return{a,c,t:a+c}}
+function sum(){const r=rsc(),t=Math.round(tsc()*0.8),tot=t+r.t;
+const row=(l,v)=>`<div style="display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px dashed var(--ln)"><span>${l}</span><b class="mono">${v}</b></div>`;
+return `<div class="card">${row("Тест",sub?t+" / 80":"не сдан · 0 / 80")}${row("Понимание темы",r.a+" / 10")}${row("Заметки и билет на выход",r.c+" / 10")}${row("Рефлексия",r.t+" / 20")}<div style="margin-top:12px"><span class="mu">Общий итог (тест 80 + рефлексия 20)</span><div class="score" style="color:${col(tot)}">${tot} / 100 — ${lvl(tot)}</div><div class="bar"><i style="width:${tot}%;background:${col(tot)}"></i></div></div></div>`}
+function sendBox(){if(!reg.name)return `<div class="card" style="border-color:var(--ac)">Сначала зарегистрируйтесь на вкладке «Урок»: преподаватель увидит ваше ФИО и группу.</div>`;
+const c=cur(),st=SENT===null?"":SENT===c?"Отправлено ✓":"Баллы изменились, отправьте снова";
+return `<p>Нажмите, чтобы преподаватель увидел ваш итоговый балл в журнале.</p><button class="btn a" data-a="snd">Отправить результат</button> <span class="mu">${st}</span>`}
+function reflV(){const mw=["Бодро","Спокойно","Устал(а)","Запутался(лась)","Вдохновлён(а)"],u=+(R.un||0);
+const lb=u<30?"Пока туманно":u<60?"Местами понятно":u<85?"Понятно":"Могу объяснить другим";
+const nt=(f,l,c)=>`<div class="note" style="background:${c}"><label for="${f}">${l}</label><textarea id="${f}" data-f="${f}">${esc(R[f]||"")}</textarea></div>`;
+return `<h2>Моё состояние</h2><div class="chips">${mw.map(m=>`<button class="chip ${R.mw===m?"on":""}" data-a="mw" data-v="${m}">${m}</button>`).join("")}</div>
+<h2>Уровень понимания темы</h2><div class="card"><div class="mono" style="font-size:30px;font-weight:700;color:var(--ac)"><span id="unv">${u}%</span> <span class="mu" id="unl" style="font-weight:400">${lb}</span></div><input type="range" min="0" max="100" step="5" value="${u}" data-f="un" aria-label="Уровень понимания"></div>
+<h2>Мои заметки</h2><div class="notes">${nt("n1","Главное, что я понял(а)","#fde68a")}${nt("n2","Что хочу повторить","#bbf7d0")}${nt("n3","Вопрос преподавателю","#fbcfe8")}</div>
+<h2>Билет на выход</h2><div class="ticket"><label for="ex">Тема урока одним предложением</label><input type="text" id="ex" data-f="ex" maxlength="160" value="${esc(R.ex||"")}"></div>
+<h2>Итоговые баллы</h2><div id="rbox">${sum()}</div>
+<h2>Отправить в журнал</h2><div id="sbox">${sendBox()}</div>
+<p class="mu">Всё сохраняется автоматически.</p>`}
+function render(){if(tab==="journal"&&location.hash!=="#teacher")tab="lesson";$("#nav").innerHTML=[["lesson","Урок"],["lecture","Лекция"],["test","Тест"],["reflect","Рефлексия"]].concat(location.hash==="#teacher"?[["journal","Журнал"]]:[]).map(([k,l])=>`<button data-tab="${k}" class="${k===tab?"on":""}">${l}</button>`).join("");
+$("#v").innerHTML={lesson:lessonV,lecture:lecV,test:testV,reflect:reflV,journal:jourV}[tab]()}
+document.addEventListener("click",e=>{const b=e.target.closest("button,input");if(!b)return;const d=b.dataset;
+if(d.tab){tab=d.tab;save("lb_tab",tab);render();if(tab==="journal")jload();window.scrollTo(0,0);return}
+if(d.a==="reg"){const n=$("#rn").value.trim(),g=$("#rg").value.trim();if(!n){$("#rn").focus();return}if(!g){$("#rg").focus();return}reg={name:n,grp:g};save("lb_reg",reg);send("на уроке");render();return}
+if(d.a==="unreg"){reg={name:"",grp:""};save("lb_reg",reg);render();return}
+if(d.a==="snd"){if(!send("сдал")){alert("Адрес журнала не настроен. Сообщите преподавателю.");return}SENT=cur();save("lb_sent",SENT);const sb=$("#sbox");if(sb)sb.innerHTML=sendBox();return}
+if(d.a==="jpin"){TP=$("#pin").value.trim();if(TP){save("lb_pin",TP);jload();render()}return}
+if(d.a==="jref"){jload();return}
+if(d.a==="jout"){TP="";save("lb_pin","");JR=[];render();return}
+if(d.a==="mw"){R.mw=d.v;save("lb_r",R);render();return}
+if(d.a==="ans"){if(!sub){ans[d.i]=+d.j;render()}return}
+if(d.a==="fin"){if(Object.keys(ans).length<QZ.length&&!confirm("Есть вопросы без ответа. Всё равно проверить?"))return;sub=true;render();window.scrollTo(0,0);return}
+if(d.a==="retry"){ans={};sub=false;render();window.scrollTo(0,0)}});
+document.addEventListener("keydown",e=>{if(e.key==="Enter"&&(e.target.id==="rn"||e.target.id==="rg"))document.querySelector('[data-a="reg"]').click()});
+document.addEventListener("input",e=>{const f=e.target.dataset&&e.target.dataset.f;if(f){R[f]=e.target.value;save("lb_r",R);{const bx=$("#rbox");if(bx)bx.innerHTML=sum();const sb=$("#sbox");if(sb)sb.innerHTML=sendBox()}if(f==="un"){const v=+e.target.value;$("#unv").textContent=v+"%";$("#unl").textContent=v<30?"Пока туманно":v<60?"Местами понятно":v<85?"Понятно":"Могу объяснить другим"}}});
+window.addEventListener("hashchange",render);
+render();if(tab==="journal")jload();
+</script></body></html>
